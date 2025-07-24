@@ -27,7 +27,7 @@ interface Agendamento {
   data: string;
   hora: string;
   mensagem: string;
-  status: "pendente" | "confirmado" | "concluido";
+  status: "pendente" | "aceite" | "concluido";
 }
 
 const Index = () => {
@@ -91,6 +91,24 @@ const Index = () => {
     });
   };
 
+  const aceitarAgendamento = (id: string) => {
+    const agendamentoAtualizado = agendamentos.map(agendamento => 
+      agendamento.id === id 
+        ? { ...agendamento, status: "aceite" as const }
+        : agendamento
+    );
+    setAgendamentos(agendamentoAtualizado);
+    
+    const agendamento = agendamentos.find(a => a.id === id);
+    if (agendamento) {
+      // Notificar cliente (simulação de notificação em tempo real)
+      toast({
+        title: "Agendamento Aceite!",
+        description: `O agendamento de ${agendamento.nome} para ${agendamento.data} às ${agendamento.hora} foi aceite pelo mecânico.`,
+      });
+    }
+  };
+
   const handleAgendamento = () => {
     if (!servico || !data || !hora) {
       toast({
@@ -137,7 +155,7 @@ const Index = () => {
       return;
     }
 
-    const numeroOficina = "5511999999999"; // Número da oficina
+    const numeroOficina = "351910000000"; // Número da oficina em Portugal
     const textoWhatsApp = `Olá! Gostaria de agendar um serviço:\n\n` +
       `📋 Serviço: ${servico}\n` +
       `📅 Data: ${format(data!, 'dd/MM/yyyy')}\n` +
@@ -382,7 +400,7 @@ const Index = () => {
                       <label className="text-xs text-muted-foreground">Status</label>
                       <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
                         agendamento.status === 'pendente' ? 'bg-yellow-100 text-yellow-800' :
-                        agendamento.status === 'confirmado' ? 'bg-blue-100 text-blue-800' :
+                        agendamento.status === 'aceite' ? 'bg-blue-100 text-blue-800' :
                         'bg-green-100 text-green-800'
                       }`}>
                         {agendamento.status}
@@ -393,6 +411,16 @@ const Index = () => {
                     <div className="mt-3 pt-3 border-t">
                       <label className="text-xs text-muted-foreground">Observações</label>
                       <p className="text-sm">{agendamento.mensagem}</p>
+                    </div>
+                  )}
+                  {agendamento.status === 'pendente' && (
+                    <div className="mt-3 pt-3 border-t">
+                      <Button 
+                        onClick={() => aceitarAgendamento(agendamento.id)}
+                        className="w-full"
+                      >
+                        Aceitar Agendamento
+                      </Button>
                     </div>
                   )}
                 </Card>
