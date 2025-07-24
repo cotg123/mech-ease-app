@@ -1,8 +1,9 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Wrench, LogOut, Users, Calendar, CheckCircle, Clock, TrendingUp, Euro } from "lucide-react";
+import { Wrench, LogOut, Users, Calendar, CheckCircle, Clock, TrendingUp, Euro, Trash2, FileText, BarChart3 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 interface Usuario {
   nome: string;
@@ -29,6 +30,7 @@ interface AdminDashboardProps {
   agendamentos: Agendamento[];
   onAcceptAgendamento: (id: string) => void;
   onCompleteAgendamento: (id: string) => void;
+  onDeleteAgendamento: (id: string) => void;
   onLogout: () => void;
 }
 
@@ -37,9 +39,11 @@ export const AdminDashboard = ({
   agendamentos, 
   onAcceptAgendamento, 
   onCompleteAgendamento,
+  onDeleteAgendamento,
   onLogout 
 }: AdminDashboardProps) => {
   const { toast } = useToast();
+  const [activeView, setActiveView] = useState<'agendamentos' | 'calendario' | 'clientes' | 'relatorios'>('agendamentos');
 
   const stats = [
     {
@@ -83,6 +87,108 @@ export const AdminDashboard = ({
       description: "Agendamento marcado como concluído.",
     });
   };
+
+  const handleDeleteAgendamento = (id: string) => {
+    onDeleteAgendamento(id);
+    toast({
+      title: "Agendamento removido!",
+      description: "O agendamento foi excluído com sucesso.",
+    });
+  };
+
+  const renderCalendario = () => (
+    <Card className="p-6">
+      <h2 className="text-lg font-semibold mb-4">📅 Calendário de Agendamentos</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {agendamentos.map((agendamento) => (
+          <Card key={agendamento.id} className="p-4 border-l-4 border-l-primary">
+            <div className="space-y-2">
+              <p className="font-semibold">{agendamento.data} - {agendamento.hora}</p>
+              <p className="text-sm">{agendamento.nome}</p>
+              <p className="text-xs text-muted-foreground">{agendamento.servico}</p>
+              <Badge variant={agendamento.status === 'pendente' ? 'secondary' : agendamento.status === 'aceite' ? 'default' : 'outline'}>
+                {agendamento.status}
+              </Badge>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </Card>
+  );
+
+  const renderClientes = () => {
+    const clientes = Array.from(new Set(agendamentos.map(a => a.email))).map(email => {
+      const agendamentosCliente = agendamentos.filter(a => a.email === email);
+      const cliente = agendamentosCliente[0];
+      return {
+        ...cliente,
+        totalAgendamentos: agendamentosCliente.length,
+        ultimoAgendamento: agendamentosCliente.sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime())[0]
+      };
+    });
+
+    return (
+      <Card className="p-6">
+        <h2 className="text-lg font-semibold mb-4">👥 Lista de Clientes</h2>
+        <div className="space-y-4">
+          {clientes.map((cliente) => (
+            <Card key={cliente.email} className="p-4">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h3 className="font-semibold">{cliente.nome}</h3>
+                  <p className="text-sm text-muted-foreground">{cliente.email}</p>
+                  <p className="text-sm text-muted-foreground">{cliente.telefone}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-medium">{cliente.totalAgendamentos} agendamentos</p>
+                  <p className="text-xs text-muted-foreground">Último: {cliente.ultimoAgendamento.data}</p>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      </Card>
+    );
+  };
+
+  const renderRelatorios = () => (
+    <Card className="p-6">
+      <h2 className="text-lg font-semibold mb-4">📊 Relatórios</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card className="p-4">
+          <h3 className="font-semibold mb-3">Status dos Agendamentos</h3>
+          <div className="space-y-2">
+            <div className="flex justify-between">
+              <span>Pendentes:</span>
+              <span className="font-bold text-yellow-600">{agendamentos.filter(a => a.status === "pendente").length}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Aceites:</span>
+              <span className="font-bold text-blue-600">{agendamentos.filter(a => a.status === "aceite").length}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Concluídos:</span>
+              <span className="font-bold text-green-600">{agendamentos.filter(a => a.status === "concluido").length}</span>
+            </div>
+          </div>
+        </Card>
+        <Card className="p-4">
+          <h3 className="font-semibold mb-3">Serviços Mais Solicitados</h3>
+          <div className="space-y-2">
+            {Object.entries(agendamentos.reduce((acc, curr) => {
+              acc[curr.servico] = (acc[curr.servico] || 0) + 1;
+              return acc;
+            }, {} as Record<string, number>)).map(([servico, count]) => (
+              <div key={servico} className="flex justify-between">
+                <span className="text-sm">{servico}:</span>
+                <span className="font-bold">{count}</span>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </div>
+    </Card>
+  );
 
   return (
     <div className="min-h-screen bg-background">
@@ -128,117 +234,156 @@ export const AdminDashboard = ({
           })}
         </div>
 
-        {/* Quick Actions */}
+        {/* Navigation */}
         <Card className="p-6">
-          <h2 className="text-lg font-semibold mb-4">Ações Rápidas</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Button variant="outline" className="h-auto p-4 flex flex-col items-center gap-2">
+          <h2 className="text-lg font-semibold mb-4">Navegação</h2>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <Button 
+              variant={activeView === 'agendamentos' ? 'default' : 'outline'} 
+              className="h-auto p-4 flex flex-col items-center gap-2"
+              onClick={() => setActiveView('agendamentos')}
+            >
+              <CheckCircle className="h-6 w-6 text-primary" />
+              <span>Agendamentos</span>
+            </Button>
+            <Button 
+              variant={activeView === 'calendario' ? 'default' : 'outline'} 
+              className="h-auto p-4 flex flex-col items-center gap-2"
+              onClick={() => setActiveView('calendario')}
+            >
               <Calendar className="h-6 w-6 text-primary" />
               <span>Ver Calendário</span>
             </Button>
-            <Button variant="outline" className="h-auto p-4 flex flex-col items-center gap-2">
+            <Button 
+              variant={activeView === 'clientes' ? 'default' : 'outline'} 
+              className="h-auto p-4 flex flex-col items-center gap-2"
+              onClick={() => setActiveView('clientes')}
+            >
               <Users className="h-6 w-6 text-primary" />
               <span>Clientes</span>
             </Button>
-            <Button variant="outline" className="h-auto p-4 flex flex-col items-center gap-2">
-              <Euro className="h-6 w-6 text-primary" />
+            <Button 
+              variant={activeView === 'relatorios' ? 'default' : 'outline'} 
+              className="h-auto p-4 flex flex-col items-center gap-2"
+              onClick={() => setActiveView('relatorios')}
+            >
+              <BarChart3 className="h-6 w-6 text-primary" />
               <span>Relatórios</span>
             </Button>
           </div>
         </Card>
 
-        {/* Agendamentos */}
-        <Card className="p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold">Agendamentos</h2>
-            <div className="flex gap-2">
-              <Badge variant="secondary">
-                {agendamentos.filter(a => a.status === "pendente").length} Pendentes
-              </Badge>
-              <Badge variant="default">
-                {agendamentos.filter(a => a.status === "aceite").length} Aceites
-              </Badge>
+        {/* Content Area */}
+        {activeView === 'agendamentos' && (
+          <Card className="p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-lg font-semibold">Agendamentos</h2>
+              <div className="flex gap-2">
+                <Badge variant="secondary">
+                  {agendamentos.filter(a => a.status === "pendente").length} Pendentes
+                </Badge>
+                <Badge variant="default">
+                  {agendamentos.filter(a => a.status === "aceite").length} Aceites
+                </Badge>
+              </div>
             </div>
-          </div>
-          
-          {agendamentos.length === 0 ? (
-            <div className="text-center py-12">
-              <Calendar className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <p className="text-muted-foreground">Nenhum agendamento encontrado.</p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {agendamentos.map((agendamento) => (
-                <Card key={agendamento.id} className="p-4 hover:shadow-md transition-shadow">
-                  <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 items-center">
-                    {/* Cliente Info */}
-                    <div>
-                      <h3 className="font-semibold">{agendamento.nome}</h3>
-                      <p className="text-sm text-muted-foreground">{agendamento.telefone}</p>
-                      <p className="text-xs text-muted-foreground">{agendamento.email}</p>
-                    </div>
+            
+            {agendamentos.length === 0 ? (
+              <div className="text-center py-12">
+                <Calendar className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <p className="text-muted-foreground">Nenhum agendamento encontrado.</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {agendamentos.map((agendamento) => (
+                  <Card key={agendamento.id} className="p-4 hover:shadow-md transition-shadow">
+                    <div className="grid grid-cols-1 lg:grid-cols-6 gap-4 items-center">
+                      {/* Cliente Info */}
+                      <div>
+                        <h3 className="font-semibold">{agendamento.nome}</h3>
+                        <p className="text-sm text-muted-foreground">{agendamento.telefone}</p>
+                        <p className="text-xs text-muted-foreground">{agendamento.email}</p>
+                      </div>
 
-                    {/* Serviço */}
-                    <div>
-                      <p className="font-medium">{agendamento.servico}</p>
-                      {agendamento.mensagem && (
-                        <p className="text-sm text-muted-foreground truncate">
-                          💬 {agendamento.mensagem}
-                        </p>
-                      )}
-                    </div>
+                      {/* Serviço */}
+                      <div>
+                        <p className="font-medium">{agendamento.servico}</p>
+                        {agendamento.mensagem && (
+                          <p className="text-sm text-muted-foreground truncate">
+                            💬 {agendamento.mensagem}
+                          </p>
+                        )}
+                      </div>
 
-                    {/* Data/Hora */}
-                    <div>
-                      <p className="font-medium">📅 {agendamento.data}</p>
-                      <p className="text-sm text-muted-foreground">🕐 {agendamento.hora}</p>
-                    </div>
+                      {/* Data/Hora */}
+                      <div>
+                        <p className="font-medium">📅 {agendamento.data}</p>
+                        <p className="text-sm text-muted-foreground">🕐 {agendamento.hora}</p>
+                      </div>
 
-                    {/* Status */}
-                    <div>
-                      <Badge variant={
-                        agendamento.status === 'pendente' ? 'secondary' :
-                        agendamento.status === 'aceite' ? 'default' : 'outline'
-                      }>
-                        {agendamento.status === 'pendente' ? 'Pendente' :
-                         agendamento.status === 'aceite' ? 'Aceite' : 'Concluído'}
-                      </Badge>
-                    </div>
+                      {/* Status */}
+                      <div>
+                        <Badge variant={
+                          agendamento.status === 'pendente' ? 'secondary' :
+                          agendamento.status === 'aceite' ? 'default' : 'outline'
+                        }>
+                          {agendamento.status === 'pendente' ? 'Pendente' :
+                           agendamento.status === 'aceite' ? 'Aceite' : 'Concluído'}
+                        </Badge>
+                      </div>
 
-                    {/* Actions */}
-                    <div className="flex gap-2">
-                      {agendamento.status === 'pendente' && (
+                      {/* Actions */}
+                      <div className="flex gap-2">
+                        {agendamento.status === 'pendente' && (
+                          <Button 
+                            onClick={() => handleAcceptAgendamento(agendamento.id)}
+                            size="sm"
+                            className="w-full"
+                          >
+                            Aceitar
+                          </Button>
+                        )}
+                        {agendamento.status === 'aceite' && (
+                          <Button 
+                            onClick={() => handleCompleteAgendamento(agendamento.id)}
+                            size="sm"
+                            variant="outline"
+                            className="w-full"
+                          >
+                            Concluir
+                          </Button>
+                        )}
+                        {agendamento.status === 'concluido' && (
+                          <div className="flex items-center gap-1 text-green-600 text-sm">
+                            <CheckCircle className="h-4 w-4" />
+                            Concluído
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Delete Button */}
+                      <div>
                         <Button 
-                          onClick={() => handleAcceptAgendamento(agendamento.id)}
+                          onClick={() => handleDeleteAgendamento(agendamento.id)}
                           size="sm"
+                          variant="destructive"
                           className="w-full"
                         >
-                          Aceitar
+                          <Trash2 className="h-4 w-4" />
+                          Excluir
                         </Button>
-                      )}
-                      {agendamento.status === 'aceite' && (
-                        <Button 
-                          onClick={() => handleCompleteAgendamento(agendamento.id)}
-                          size="sm"
-                          variant="outline"
-                          className="w-full"
-                        >
-                          Concluir
-                        </Button>
-                      )}
-                      {agendamento.status === 'concluido' && (
-                        <div className="flex items-center gap-1 text-green-600 text-sm">
-                          <CheckCircle className="h-4 w-4" />
-                          Concluído
-                        </div>
-                      )}
+                      </div>
                     </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          )}
-        </Card>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </Card>
+        )}
+
+        {activeView === 'calendario' && renderCalendario()}
+        {activeView === 'clientes' && renderClientes()}
+        {activeView === 'relatorios' && renderRelatorios()}
       </main>
     </div>
   );

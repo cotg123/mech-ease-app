@@ -76,6 +76,11 @@ const Index = () => {
     setAgendamentos(agendamentoAtualizado);
   };
 
+  const handleDeleteAgendamento = (id: string) => {
+    const agendamentosAtualizados = agendamentos.filter(agendamento => agendamento.id !== id);
+    setAgendamentos(agendamentosAtualizados);
+  };
+
   const handleAddAgendamento = (agendamentoData: Omit<Agendamento, "id" | "status">) => {
     const novoAgendamento: Agendamento = {
       id: Date.now().toString(),
@@ -124,6 +129,7 @@ const Index = () => {
         agendamentos={agendamentos}
         onAcceptAgendamento={handleAcceptAgendamento}
         onCompleteAgendamento={handleCompleteAgendamento}
+        onDeleteAgendamento={handleDeleteAgendamento}
         onLogout={handleLogout}
       />
     );
