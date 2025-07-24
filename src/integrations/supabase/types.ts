@@ -97,7 +97,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_current_user_type: {
+        Args: Record<PropertyKey, never>
+        Returns: Database["public"]["Enums"]["user_type"]
+      }
     }
     Enums: {
       appointment_status: "pendente" | "aceite" | "concluido"
