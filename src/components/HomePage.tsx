@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Wrench, Phone, MapPin, Clock, Star, Users, Award, Zap } from "lucide-react";
+import { Wrench, Phone, MapPin, Clock, Star, Users, Award, Zap, PaintBucket, ThumbsUp, TrendingUp, Settings, Truck } from "lucide-react";
 import heroImage from "@/assets/workshop-hero.jpg";
 import servicesImage from "@/assets/services-grid.jpg";
 
@@ -10,13 +10,84 @@ interface HomePageProps {
 
 export const HomePage = ({ onLogin }: HomePageProps) => {
   const services = [
-    { name: "Troca de Óleo", description: "Serviço completo de troca de óleo e filtros", icon: "🛢️" },
-    { name: "Alinhamento", description: "Alinhamento e balanceamento de rodas", icon: "⚖️" },
-    { name: "Freios", description: "Manutenção e reparo do sistema de freios", icon: "🛑" },
-    { name: "Motor", description: "Diagnóstico e reparo de motor", icon: "🔧" },
-    { name: "Suspensão", description: "Reparo completo da suspensão", icon: "🏗️" },
-    { name: "Ar Condicionado", description: "Manutenção do sistema de climatização", icon: "❄️" }
+    { 
+      name: "Chapa e Pintura", 
+      description: "Serviços completos de funilaria e pintura automotiva com acabamento profissional", 
+      icon: PaintBucket,
+      details: [
+        "Reparação de riscos e amolgadelas",
+        "Pintura completa ou parcial",
+        "Polimento e enceramento",
+        "Proteção de pintura",
+        "Orçamento gratuito"
+      ]
+    },
+    { 
+      name: "Check-up Auto", 
+      description: "Revisão completa do seu veículo com diagnóstico detalhado", 
+      icon: ThumbsUp,
+      details: [
+        "Verificação de 50+ pontos",
+        "Teste de sistemas eletrônicos",
+        "Análise de fluidos",
+        "Estado de pneus e freios",
+        "Relatório detalhado"
+      ]
+    },
+    { 
+      name: "Diagnósticos Auto", 
+      description: "Diagnóstico avançado com equipamentos de última geração", 
+      icon: TrendingUp,
+      details: [
+        "Scanner OBD2 avançado",
+        "Teste de performance do motor",
+        "Análise de emissões",
+        "Diagnóstico de falhas",
+        "Relatório técnico completo"
+      ]
+    },
+    { 
+      name: "Revisões", 
+      description: "Manutenção preventiva e revisões programadas", 
+      icon: Settings,
+      details: [
+        "Troca de óleo e filtros",
+        "Revisão de freios",
+        "Verificação de suspensão",
+        "Manutenção preventiva",
+        "Garantia de serviço"
+      ]
+    },
+    { 
+      name: "Reboque", 
+      description: "Serviço de reboque 24h para emergências", 
+      icon: Truck,
+      details: [
+        "Disponível 24h/7 dias",
+        "Cobertura em todo Portugal",
+        "Equipamento especializado",
+        "Profissionais qualificados",
+        "Preços competitivos"
+      ]
+    }
   ];
+
+  const handleServiceClick = (service: any) => {
+    const message = `Olá! Gostaria de agendar o serviço de ${service.name}. 
+
+📋 Detalhes do serviço:
+${service.details.map((detail: string, index: number) => `${index + 1}. ${detail}`).join('\n')}
+
+Por favor, me informem sobre disponibilidade e valores.
+
+Obrigado!`;
+
+    const whatsappNumber = "351910000000";
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+    
+    window.open(whatsappUrl, '_blank');
+  };
 
   const stats = [
     { number: "500+", label: "Clientes Satisfeitos", icon: Users },
@@ -100,22 +171,58 @@ export const HomePage = ({ onLogin }: HomePageProps) => {
           <div className="text-center mb-12">
             <h3 className="text-3xl font-bold mb-4">Nossos Serviços</h3>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Oferecemos uma gama completa de serviços mecânicos com equipamentos modernos 
-              e profissionais qualificados.
+              Temos oficinas próprias e uma equipa de profissionais que vão ao encontro das necessidades dos nossos clientes, esperamos por si!
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-            {services.map((service, index) => (
-              <Card key={index} className="p-6 hover:shadow-lg transition-shadow">
-                <div className="text-4xl mb-4">{service.icon}</div>
-                <h4 className="text-lg font-semibold mb-2">{service.name}</h4>
-                <p className="text-muted-foreground text-sm">{service.description}</p>
-              </Card>
-            ))}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {services.slice(0, 4).map((service, index) => {
+              const IconComponent = service.icon;
+              return (
+                <Card key={index} className="p-8 hover:shadow-xl transition-all duration-300 text-center group">
+                  <div className="w-20 h-20 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <IconComponent className="h-10 w-10 text-white" />
+                  </div>
+                  <h4 className="text-xl font-bold mb-3">{service.name}</h4>
+                  <p className="text-muted-foreground text-sm mb-6">{service.description}</p>
+                  <Button 
+                    onClick={() => handleServiceClick(service)}
+                    className="w-full bg-transparent border-2 border-foreground text-foreground hover:bg-foreground hover:text-background transition-all duration-300"
+                    variant="outline"
+                  >
+                    ⏰ AGENDAR SERVIÇO
+                  </Button>
+                </Card>
+              );
+            })}
           </div>
 
-          <div className="text-center">
+          {/* Fifth service centered below */}
+          <div className="flex justify-center">
+            <div className="w-full max-w-xs">
+              {services.slice(4).map((service, index) => {
+                const IconComponent = service.icon;
+                return (
+                  <Card key={index + 4} className="p-8 hover:shadow-xl transition-all duration-300 text-center group">
+                    <div className="w-20 h-20 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                      <IconComponent className="h-10 w-10 text-white" />
+                    </div>
+                    <h4 className="text-xl font-bold mb-3">{service.name}</h4>
+                    <p className="text-muted-foreground text-sm mb-6">{service.description}</p>
+                    <Button 
+                      onClick={() => handleServiceClick(service)}
+                      className="w-full bg-transparent border-2 border-foreground text-foreground hover:bg-foreground hover:text-background transition-all duration-300"
+                      variant="outline"
+                    >
+                      ⏰ AGENDAR SERVIÇO
+                    </Button>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="text-center mt-12">
             <img 
               src={servicesImage} 
               alt="Nossos serviços"
