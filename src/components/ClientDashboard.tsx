@@ -62,16 +62,18 @@ export const ClientDashboard = ({
     "Pickup/Caminhonetes",
     "Motos",
     "Veículos Comerciais",
-    "Veículos de Luxo"
+    "Veículos de Luxo",
+    "Revolut"
   ];
 
   const modelosPorCategoria = {
-    "Carros de Passeio": ["Toyota Corolla", "Honda Civic", "Volkswagen Golf", "Ford Focus", "Nissan Sentra", "Hyundai Elantra"],
-    "SUVs": ["Toyota RAV4", "Honda CR-V", "Volkswagen Tiguan", "Ford Escape", "Nissan X-Trail", "Hyundai Tucson"],
-    "Pickup/Caminhonetes": ["Ford Ranger", "Toyota Hilux", "Volkswagen Amarok", "Nissan Navara", "Mitsubishi L200"],
-    "Motos": ["Honda CB600F", "Yamaha MT-07", "Kawasaki Ninja 300", "BMW S1000RR", "Ducati Monster"],
-    "Veículos Comerciais": ["Ford Transit", "Volkswagen Crafter", "Mercedes Sprinter", "Iveco Daily"],
-    "Veículos de Luxo": ["BMW Série 3", "Mercedes Classe C", "Audi A4", "Lexus IS", "Jaguar XE"]
+    "Carros de Passeio": ["Toyota Corolla", "Honda Civic", "Volkswagen Golf", "Ford Focus", "Nissan Sentra", "Hyundai Elantra", "Revolut Sedan", "Revolut Compact"],
+    "SUVs": ["Toyota RAV4", "Honda CR-V", "Volkswagen Tiguan", "Ford Escape", "Nissan X-Trail", "Hyundai Tucson", "Revolut SUV"],
+    "Pickup/Caminhonetes": ["Ford Ranger", "Toyota Hilux", "Volkswagen Amarok", "Nissan Navara", "Mitsubishi L200", "Revolut Pickup"],
+    "Motos": ["Honda CB600F", "Yamaha MT-07", "Kawasaki Ninja 300", "BMW S1000RR", "Ducati Monster", "Revolut Bike"],
+    "Veículos Comerciais": ["Ford Transit", "Volkswagen Crafter", "Mercedes Sprinter", "Iveco Daily", "Revolut Commercial"],
+    "Veículos de Luxo": ["BMW Série 3", "Mercedes Classe C", "Audi A4", "Lexus IS", "Jaguar XE", "Revolut Luxury"],
+    "Revolut": ["Revolut Premium", "Revolut Standard", "Revolut Business", "Revolut Metal", "Revolut Plus", "Revolut Digital"]
   };
 
   const servicosDisponiveis = [
