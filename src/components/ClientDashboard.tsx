@@ -48,11 +48,31 @@ export const ClientDashboard = ({
   onMarkNotificationRead
 }: ClientDashboardProps) => {
   const [servico, setServico] = useState("");
+  const [categoriaVeiculo, setCategoriaVeiculo] = useState("");
+  const [modelo, setModelo] = useState("");
   const [mensagem, setMensagem] = useState("");
   const [data, setData] = useState<Date | undefined>(new Date());
   const [hora, setHora] = useState("");
   const [showNotifications, setShowNotifications] = useState(false);
   const { toast } = useToast();
+
+  const categoriasVeiculos = [
+    "Carros de Passeio",
+    "SUVs",
+    "Pickup/Caminhonetes",
+    "Motos",
+    "Veículos Comerciais",
+    "Veículos de Luxo"
+  ];
+
+  const modelosPorCategoria = {
+    "Carros de Passeio": ["Toyota Corolla", "Honda Civic", "Volkswagen Golf", "Ford Focus", "Nissan Sentra", "Hyundai Elantra"],
+    "SUVs": ["Toyota RAV4", "Honda CR-V", "Volkswagen Tiguan", "Ford Escape", "Nissan X-Trail", "Hyundai Tucson"],
+    "Pickup/Caminhonetes": ["Ford Ranger", "Toyota Hilux", "Volkswagen Amarok", "Nissan Navara", "Mitsubishi L200"],
+    "Motos": ["Honda CB600F", "Yamaha MT-07", "Kawasaki Ninja 300", "BMW S1000RR", "Ducati Monster"],
+    "Veículos Comerciais": ["Ford Transit", "Volkswagen Crafter", "Mercedes Sprinter", "Iveco Daily"],
+    "Veículos de Luxo": ["BMW Série 3", "Mercedes Classe C", "Audi A4", "Lexus IS", "Jaguar XE"]
+  };
 
   const servicosDisponiveis = [
     "Troca de Óleo",
@@ -74,10 +94,10 @@ export const ClientDashboard = ({
   ];
 
   const handleAgendamento = () => {
-    if (!servico || !data || !hora) {
+    if (!servico || !categoriaVeiculo || !modelo || !data || !hora) {
       toast({
         title: "Erro no agendamento",
-        description: "Preencha serviço, data e horário.",
+        description: "Preencha todos os campos obrigatórios: serviço, categoria do veículo, modelo, data e horário.",
         variant: "destructive",
       });
       return;
@@ -87,7 +107,7 @@ export const ClientDashboard = ({
       nome: usuario.nome,
       telefone: usuario.telefone,
       email: usuario.email,
-      servico,
+      servico: `${servico} - ${categoriaVeiculo} (${modelo})`,
       data: format(data, 'dd/MM/yyyy'),
       hora,
       mensagem,
@@ -97,38 +117,48 @@ export const ClientDashboard = ({
     
     toast({
       title: "Agendamento realizado!",
-      description: `Serviço de ${servico} agendado para ${format(data, 'dd/MM/yyyy')} às ${hora}.`,
+      description: `Serviço de ${servico} para ${modelo} agendado para ${format(data, 'dd/MM/yyyy')} às ${hora}.`,
     });
 
     // Reset form
     setServico("");
+    setCategoriaVeiculo("");
+    setModelo("");
     setMensagem("");
     setData(new Date());
     setHora("");
   };
 
   const enviarWhatsApp = () => {
-    if (!servico || !data || !hora) {
+    if (!servico || !categoriaVeiculo || !modelo || !data || !hora) {
       toast({
         title: "Erro",
-        description: "Complete o agendamento primeiro.",
+        description: "Complete todas as informações do agendamento primeiro.",
         variant: "destructive",
       });
       return;
     }
 
     const numeroOficina = "351910000000";
-    const textoWhatsApp = `Olá! Gostaria de agendar um serviço:\n\n` +
-      `📋 Serviço: ${servico}\n` +
-      `📅 Data: ${format(data!, 'dd/MM/yyyy')}\n` +
-      `🕐 Horário: ${hora}\n` +
-      `👤 Nome: ${usuario.nome}\n` +
-      `📱 Telefone: ${usuario.telefone}\n` +
-      `📧 Email: ${usuario.email}\n` +
-      `💬 Observações: ${mensagem || "Nenhuma"}`;
+    const textoWhatsApp = `🔧 *AGENDAMENTO MECHEASE* 🔧\n\n` +
+      `📋 *Serviço:* ${servico}\n` +
+      `🚗 *Categoria:* ${categoriaVeiculo}\n` +
+      `🚙 *Modelo:* ${modelo}\n` +
+      `📅 *Data:* ${format(data!, 'dd/MM/yyyy')}\n` +
+      `🕐 *Horário:* ${hora}\n\n` +
+      `👤 *Cliente:* ${usuario.nome}\n` +
+      `📱 *Telefone:* ${usuario.telefone}\n` +
+      `📧 *Email:* ${usuario.email}\n\n` +
+      `💬 *Observações:* ${mensagem || "Nenhuma"}\n\n` +
+      `Por favor, confirme a disponibilidade. Obrigado! 🙏`;
     
     const urlWhatsApp = `https://wa.me/${numeroOficina}?text=${encodeURIComponent(textoWhatsApp)}`;
     window.open(urlWhatsApp, '_blank');
+    
+    toast({
+      title: "WhatsApp aberto!",
+      description: "Mensagem preparada para confirmação do agendamento.",
+    });
   };
 
   const meusAgendamentos = agendamentos.filter(a => a.nome === usuario.nome);
@@ -205,6 +235,45 @@ export const ClientDashboard = ({
                     {servicosDisponiveis.map((item) => (
                       <SelectItem key={item} value={item}>
                         {item}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium">Categoria do Veículo</label>
+                <Select value={categoriaVeiculo} onValueChange={(value) => {
+                  setCategoriaVeiculo(value);
+                  setModelo(""); // Reset modelo when categoria changes
+                }}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione a categoria" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categoriasVeiculos.map((categoria) => (
+                      <SelectItem key={categoria} value={categoria}>
+                        {categoria}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium">Modelo do Veículo</label>
+                <Select 
+                  value={modelo} 
+                  onValueChange={setModelo}
+                  disabled={!categoriaVeiculo}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={categoriaVeiculo ? "Selecione o modelo" : "Primeiro selecione a categoria"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categoriaVeiculo && modelosPorCategoria[categoriaVeiculo as keyof typeof modelosPorCategoria]?.map((modeloItem) => (
+                      <SelectItem key={modeloItem} value={modeloItem}>
+                        {modeloItem}
                       </SelectItem>
                     ))}
                   </SelectContent>
