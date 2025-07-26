@@ -3,75 +3,38 @@ import { Button } from "@/components/ui/button";
 import { Wrench, Phone, MapPin, Clock, Star, Users, Award, Zap, PaintBucket, ThumbsUp, TrendingUp, Settings, Truck } from "lucide-react";
 import heroImage from "@/assets/workshop-hero.jpg";
 import servicesImage from "@/assets/services-grid.jpg";
-
 interface HomePageProps {
   onLogin: () => void;
 }
-
-export const HomePage = ({ onLogin }: HomePageProps) => {
-  const services = [
-    { 
-      name: "Chapa e Pintura", 
-      description: "Serviços completos de funilaria e pintura automotiva com acabamento profissional", 
-      icon: PaintBucket,
-      details: [
-        "Reparação de riscos e amolgadelas",
-        "Pintura completa ou parcial",
-        "Polimento e enceramento",
-        "Proteção de pintura",
-        "Orçamento gratuito"
-      ]
-    },
-    { 
-      name: "Check-up Auto", 
-      description: "Revisão completa do seu veículo com diagnóstico detalhado", 
-      icon: ThumbsUp,
-      details: [
-        "Verificação de 50+ pontos",
-        "Teste de sistemas eletrônicos",
-        "Análise de fluidos",
-        "Estado de pneus e freios",
-        "Relatório detalhado"
-      ]
-    },
-    { 
-      name: "Diagnósticos Auto", 
-      description: "Diagnóstico avançado com equipamentos de última geração", 
-      icon: TrendingUp,
-      details: [
-        "Scanner OBD2 avançado",
-        "Teste de performance do motor",
-        "Análise de emissões",
-        "Diagnóstico de falhas",
-        "Relatório técnico completo"
-      ]
-    },
-    { 
-      name: "Revisões", 
-      description: "Manutenção preventiva e revisões programadas", 
-      icon: Settings,
-      details: [
-        "Troca de óleo e filtros",
-        "Revisão de freios",
-        "Verificação de suspensão",
-        "Manutenção preventiva",
-        "Garantia de serviço"
-      ]
-    },
-    { 
-      name: "Reboque", 
-      description: "Serviço de reboque 24h para emergências", 
-      icon: Truck,
-      details: [
-        "Disponível 24h/7 dias",
-        "Cobertura em todo Portugal",
-        "Equipamento especializado",
-        "Profissionais qualificados",
-        "Preços competitivos"
-      ]
-    }
-  ];
-
+export const HomePage = ({
+  onLogin
+}: HomePageProps) => {
+  const services = [{
+    name: "Chapa e Pintura",
+    description: "Serviços completos de funilaria e pintura automotiva com acabamento profissional",
+    icon: PaintBucket,
+    details: ["Reparação de riscos e amolgadelas", "Pintura completa ou parcial", "Polimento e enceramento", "Proteção de pintura", "Orçamento gratuito"]
+  }, {
+    name: "Check-up Auto",
+    description: "Revisão completa do seu veículo com diagnóstico detalhado",
+    icon: ThumbsUp,
+    details: ["Verificação de 50+ pontos", "Teste de sistemas eletrônicos", "Análise de fluidos", "Estado de pneus e freios", "Relatório detalhado"]
+  }, {
+    name: "Diagnósticos Auto",
+    description: "Diagnóstico avançado com equipamentos de última geração",
+    icon: TrendingUp,
+    details: ["Scanner OBD2 avançado", "Teste de performance do motor", "Análise de emissões", "Diagnóstico de falhas", "Relatório técnico completo"]
+  }, {
+    name: "Revisões",
+    description: "Manutenção preventiva e revisões programadas",
+    icon: Settings,
+    details: ["Troca de óleo e filtros", "Revisão de freios", "Verificação de suspensão", "Manutenção preventiva", "Garantia de serviço"]
+  }, {
+    name: "Reboque",
+    description: "Serviço de reboque 24h para emergências",
+    icon: Truck,
+    details: ["Disponível 24h/7 dias", "Cobertura em todo Portugal", "Equipamento especializado", "Profissionais qualificados", "Preços competitivos"]
+  }];
   const handleServiceClick = (service: any) => {
     const message = `Olá! Gostaria de agendar o serviço de ${service.name}. 
 
@@ -81,23 +44,29 @@ ${service.details.map((detail: string, index: number) => `${index + 1}. ${detail
 Por favor, me informem sobre disponibilidade e valores.
 
 Obrigado!`;
-
     const whatsappNumber = "351910000000";
     const encodedMessage = encodeURIComponent(message);
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
-    
     window.open(whatsappUrl, '_blank');
   };
-
-  const stats = [
-    { number: "500+", label: "Clientes Satisfeitos", icon: Users },
-    { number: "15+", label: "Anos de Experiência", icon: Award },
-    { number: "98%", label: "Taxa de Satisfação", icon: Star },
-    { number: "24h", label: "Resposta Rápida", icon: Zap }
-  ];
-
-  return (
-    <div className="min-h-screen bg-background">
+  const stats = [{
+    number: "500+",
+    label: "Clientes Satisfeitos",
+    icon: Users
+  }, {
+    number: "15+",
+    label: "Anos de Experiência",
+    icon: Award
+  }, {
+    number: "98%",
+    label: "Taxa de Satisfação",
+    icon: Star
+  }, {
+    number: "24h",
+    label: "Resposta Rápida",
+    icon: Zap
+  }];
+  return <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="bg-card border-b sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 py-4">
@@ -118,10 +87,9 @@ Obrigado!`;
 
       {/* Hero Section */}
       <section className="relative h-[70vh] overflow-hidden">
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url(${heroImage})` }}
-        >
+        <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{
+        backgroundImage: `url(${heroImage})`
+      }}>
           <div className="absolute inset-0 bg-black/50" />
         </div>
         <div className="relative z-10 h-full flex items-center">
@@ -152,15 +120,13 @@ Obrigado!`;
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => {
-              const Icon = stat.icon;
-              return (
-                <div key={index} className="text-center">
+            const Icon = stat.icon;
+            return <div key={index} className="text-center">
                   <Icon className="h-8 w-8 text-primary mx-auto mb-2" />
                   <div className="text-3xl font-bold text-foreground mb-1">{stat.number}</div>
                   <div className="text-muted-foreground text-sm">{stat.label}</div>
-                </div>
-              );
-            })}
+                </div>;
+          })}
           </div>
         </div>
       </section>
@@ -177,58 +143,40 @@ Obrigado!`;
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {services.slice(0, 4).map((service, index) => {
-              const IconComponent = service.icon;
-              return (
-                <Card key={index} className="p-8 hover:shadow-xl transition-all duration-300 text-center group">
+            const IconComponent = service.icon;
+            return <Card key={index} className="p-8 hover:shadow-xl transition-all duration-300 text-center group">
                   <div className="w-20 h-20 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
                     <IconComponent className="h-10 w-10 text-white" />
                   </div>
                   <h4 className="text-xl font-bold mb-3">{service.name}</h4>
                   <p className="text-muted-foreground text-sm mb-6">{service.description}</p>
-                  <Button 
-                    onClick={() => handleServiceClick(service)}
-                    className="w-full bg-transparent border-2 border-foreground text-foreground hover:bg-foreground hover:text-background transition-all duration-300"
-                    variant="outline"
-                  >
+                  <Button onClick={() => handleServiceClick(service)} className="w-full bg-transparent border-2 border-foreground text-foreground hover:bg-foreground hover:text-background transition-all duration-300" variant="outline">
                     ⏰ AGENDAR SERVIÇO
                   </Button>
-                </Card>
-              );
-            })}
+                </Card>;
+          })}
           </div>
 
           {/* Fifth service centered below */}
           <div className="flex justify-center">
             <div className="w-full max-w-xs">
               {services.slice(4).map((service, index) => {
-                const IconComponent = service.icon;
-                return (
-                  <Card key={index + 4} className="p-8 hover:shadow-xl transition-all duration-300 text-center group">
+              const IconComponent = service.icon;
+              return <Card key={index + 4} className="p-8 hover:shadow-xl transition-all duration-300 text-center group">
                     <div className="w-20 h-20 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
                       <IconComponent className="h-10 w-10 text-white" />
                     </div>
                     <h4 className="text-xl font-bold mb-3">{service.name}</h4>
                     <p className="text-muted-foreground text-sm mb-6">{service.description}</p>
-                    <Button 
-                      onClick={() => handleServiceClick(service)}
-                      className="w-full bg-transparent border-2 border-foreground text-foreground hover:bg-foreground hover:text-background transition-all duration-300"
-                      variant="outline"
-                    >
+                    <Button onClick={() => handleServiceClick(service)} className="w-full bg-transparent border-2 border-foreground text-foreground hover:bg-foreground hover:text-background transition-all duration-300" variant="outline">
                       ⏰ AGENDAR SERVIÇO
                     </Button>
-                  </Card>
-                );
-              })}
+                  </Card>;
+            })}
             </div>
           </div>
 
-          <div className="text-center mt-12">
-            <img 
-              src={servicesImage} 
-              alt="Nossos serviços"
-              className="w-full max-w-4xl mx-auto rounded-lg shadow-lg"
-            />
-          </div>
+          
         </div>
       </section>
 
@@ -267,6 +215,5 @@ Obrigado!`;
           </p>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 };
