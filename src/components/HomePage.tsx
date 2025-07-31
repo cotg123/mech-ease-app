@@ -96,7 +96,7 @@ Obrigado!`;
           <div className="max-w-6xl mx-auto px-4 text-white">
             <div className="max-w-2xl">
               <h2 className="text-5xl font-bold mb-6">
-                Serviços Mecânicos de <span className="text-primary">Excelência</span>
+                Serviços Mecânicos de <span className="text-zinc-50">Excelência</span>
               </h2>
               <p className="text-xl mb-8 opacity-90">
                 Mais de 15 anos de experiência em manutenção e reparo automotivo em Portugal. 
@@ -106,7 +106,7 @@ Obrigado!`;
                 <Button onClick={onLogin} size="lg" className="bg-primary hover:bg-primary/90">
                   Agendar Agora
                 </Button>
-                <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-black">
+                <Button variant="outline" size="lg" className="border-white text-white hover:text-black bg-zinc-100">
                   Ver Serviços
                 </Button>
               </div>
